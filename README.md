@@ -11,7 +11,7 @@ npm install object-fsm
 
 ## How to use
 
-```
+```js
 var ObjectFsm = require('object-fsm');
 
 var light = {};
