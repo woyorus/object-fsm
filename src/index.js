@@ -57,13 +57,15 @@ ObjectFsm.prototype.handleEvent = function (event) {
         if (eventObject.validFrom.indexOf(this.state) !== -1) {
             var fromState = this.state;
             var toState = eventObject.validTo;
+            var handlerReturnValue = undefined;
             this.emit('willTransition', fromState, toState, event);
             if (typeof eventObject.handler === 'function') {
                 var handlerArgs = Array.prototype.slice.call(arguments).slice(1);
-                eventObject.handler.apply(this, handlerArgs);
+                handlerReturnValue = eventObject.handler.apply(this, handlerArgs);
             }
             this.state = toState;
             this.emit('didTransition', fromState, toState, event);
+            return handlerReturnValue;
         }
     }
 };

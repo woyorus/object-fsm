@@ -93,4 +93,13 @@ describe('state machine', function () {
         });
         testObject.handleEvent('go', 'hello', 123);
     });
+
+    it('should return value that is returned by the handler', function () {
+        testObject.addState('A', 'B');
+        testObject.addEvent('go', 'A', 'B', function () {
+            return "ok";
+        });
+        var returnValue = testObject.handleEvent('go');
+        expect(returnValue).to.equal("ok");
+    })
 });
