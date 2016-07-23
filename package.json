@@ -1,6 +1,6 @@
 {
   "name": "object-fsm",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Make any JavaScript object to be a finite state machine",
   "main": "src/index.js",
   "scripts": {
