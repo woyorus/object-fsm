@@ -15,6 +15,9 @@ function mixin(obj) {
     obj.fsm = {};
     obj.fsm.states = [];
     obj.fsm.events = {};
+    obj.fsm.transitionCancelled = false;
+    obj.fsm.transitionDeferred = false;
+    obj.fsm.switchingStates = false;
     return obj;
 }
 
@@ -52,20 +55,47 @@ ObjectFsm.prototype.addEvent = function(eventName, statesFrom, stateTo, handler)
 };
 
 ObjectFsm.prototype.handleEvent = function (event) {
-    if (this.fsm.events.hasOwnProperty(event)) {
-        var eventObject = this.fsm.events[event];
-        if (eventObject.validFrom.indexOf(this.state) !== -1) {
-            var fromState = this.state;
-            var toState = eventObject.validTo;
-            var handlerReturnValue = undefined;
-            this.emit('willTransition', fromState, toState, event);
-            if (typeof eventObject.handler === 'function') {
-                var handlerArgs = Array.prototype.slice.call(arguments).slice(1);
-                handlerReturnValue = eventObject.handler.apply(this, handlerArgs);
+    if (!this.fsm.switchingStates) {
+        if (this.fsm.events.hasOwnProperty(event)) {
+            var eventObject = this.fsm.events[event];
+            if (eventObject.validFrom.indexOf(this.state) !== -1) {
+                this.fsm.switchingStates = true;
+                var fromState = this.state;
+                var toState = eventObject.validTo;
+                var handlerReturnValue = undefined;
+                this.emit('willTransition', fromState, toState, event);
+                if (typeof eventObject.handler === 'function') {
+                    var handlerArgs = Array.prototype.slice.call(arguments).slice(1);
+                    handlerReturnValue = eventObject.handler.apply(this, handlerArgs);
+                }
+                var that = this;
+                this.fsm.finalizeTransitionClosure = function () {
+                    if (!that.fsm.transitionCancelled) {
+                        that.state = toState;
+                        that.emit('didTransition', fromState, toState, event);
+                    }
+                };
+                if (!this.fsm.transitionDeferred) {
+                    this.finalizeTransition();
+                }
+                return handlerReturnValue;
             }
-            this.state = toState;
-            this.emit('didTransition', fromState, toState, event);
-            return handlerReturnValue;
         }
     }
+};
+
+ObjectFsm.prototype.cancelTransition = function () {
+    this.fsm.transitionCancelled = true;
+    this.fsm.finalizeTransitionClosure = null;
+    this.fsm.switchingStates = false;
+};
+
+ObjectFsm.prototype.deferTransition = function () {
+    this.fsm.transitionDeferred = true;
+};
+
+ObjectFsm.prototype.finalizeTransition = function () {
+    this.fsm.finalizeTransitionClosure();
+    this.fsm.finalizeTransitionClosure = null;
+    this.fsm.switchingStates = false;
 };

@@ -54,6 +54,14 @@ describe('state machine', function () {
         expect(testObject.state).to.equal('B');
     });
 
+    it('should not allow transition from invalid state', function () {
+        testObject.addState('A', 'B') ;
+        testObject.addEvent('go', 'B', 'A');
+        testObject.setStartingState('A');
+        testObject.handleEvent('go');
+        expect(testObject.state).to.equal('A');
+    });
+
     it('should invoke event handler upon event', function (done) {
         testObject.addState('A', 'B');
         testObject.addEvent('go', 'A', 'B', function () {
@@ -101,5 +109,39 @@ describe('state machine', function () {
         });
         var returnValue = testObject.handleEvent('go');
         expect(returnValue).to.equal("ok");
-    })
+    });
+
+    it('should not transition if cancelled in the handler', function () {
+        testObject.addState('A', 'B');
+        testObject.addEvent('go', 'A', 'B', function () {
+            this.cancelTransition();
+        });
+        testObject.handleEvent('go');
+        expect(testObject.state).to.equal('A');
+    });
+
+    it('should pause transition if deferred', function () {
+        testObject.addState('A', 'B');
+        testObject.addEvent('go', 'A', 'B', function () {
+            this.deferTransition();
+        });
+        testObject.handleEvent('go');
+        expect(testObject.state).to.equal('A');
+        testObject.finalizeTransition();
+        expect(testObject.state).to.equal('B');
+    });
+
+    it('should not handle another event while transition is deferred', function () {
+        testObject.addState('A', 'B', 'C');
+        testObject.addEvent('goToB', 'A', 'B', function () {
+            this.deferTransition();
+        });
+        testObject.addEvent('goToC', 'A', 'C');
+        testObject.handleEvent('goToB');
+        expect(testObject.state).to.equal('A');
+        testObject.handleEvent('goToC');
+        expect(testObject.state).to.equal('A');
+        testObject.finalizeTransition();
+        expect(testObject.state).to.equal('B');
+    });
 });
