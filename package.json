@@ -1,0 +1,33 @@
+{
+  "name": "object-fsm",
+  "version": "0.1.0",
+  "description": "Make any JavaScript object to be a finite state machine",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "mocha src/index.test.js -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/woyorus/object-fsm.git"
+  },
+  "keywords": [
+    "fsm",
+    "finite",
+    "state",
+    "machine",
+    "deterministic",
+    "automata",
+    "state-machine",
+    "dfa"
+  ],
+  "author": "Kirill Kravinsky <woyorus@gmail.com> (http://github.com/woyorus)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/woyorus/object-fsm/issues"
+  },
+  "homepage": "https://github.com/woyorus/object-fsm#readme",
+  "devDependencies": {
+    "chai": "3.5.0",
+    "mocha": "2.5.3"
+  }
+}
