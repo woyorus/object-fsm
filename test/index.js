@@ -84,4 +84,13 @@ describe('state machine', function () {
         testObject.handleEvent('go');
     });
 
+    it('should pass parameters from handleEvent to the handler', function (done) {
+        testObject.addState('A', 'B');
+        testObject.addEvent('go', 'A', 'B', function (param1, param2) {
+            expect(param1).to.equal('hello');
+            expect(param2).to.equal(123);
+            done();
+        });
+        testObject.handleEvent('go', 'hello', 123);
+    });
 });

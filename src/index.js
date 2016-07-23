@@ -59,7 +59,8 @@ ObjectFsm.prototype.handleEvent = function (event) {
             var toState = eventObject.validTo;
             this.emit('willTransition', fromState, toState, event);
             if (typeof eventObject.handler === 'function') {
-                eventObject.handler();
+                var handlerArgs = Array.prototype.slice.call(arguments).slice(1);
+                eventObject.handler.apply(this, handlerArgs);
             }
             this.state = toState;
             this.emit('didTransition', fromState, toState, event);
