@@ -4,7 +4,8 @@
   "description": "Make any JavaScript object to be a finite state machine",
   "main": "src/index.js",
   "scripts": {
-    "test": "mocha src/index.test.js -w"
+    "test": "mocha src/index.test.js -w",
+    "test:single": "mocha src/index.test.js"
   },
   "repository": {
     "type": "git",
