@@ -4,8 +4,9 @@
   "description": "Make any JavaScript object to be a finite state machine",
   "main": "src/index.js",
   "scripts": {
-    "test": "mocha src/index.test.js -w",
-    "test:single": "mocha src/index.test.js"
+    "test": "mocha --reporter spec -w",
+    "test:single": "mocha --reporter spec",
+    "cover": "istanbul cover _mocha -- -R spec test/*"
   },
   "repository": {
     "type": "git",
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "chai": "3.5.0",
+    "istanbul": "0.4.4",
     "mocha": "2.5.3"
   }
 }

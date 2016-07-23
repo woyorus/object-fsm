@@ -1,5 +1,5 @@
 var expect = require('chai').expect;
-var ObjectFsm = require('./index');
+var ObjectFsm = require('./../src/index');
 
 describe('ObjectFsm(obj)', function () {
     it('should mixin', function () {
