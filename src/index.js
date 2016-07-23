@@ -50,7 +50,7 @@ ObjectFsm.prototype.addEvent = function(eventName, statesFrom, stateTo, handler)
 ObjectFsm.prototype.handleEvent = function (event) {
     if (this.fsm.events.hasOwnProperty(event)) {
         var eventObject = this.fsm.events[event];
-        if (eventObject.validFrom.includes(this.state)) {
+        if (eventObject.validFrom.indexOf(this.state) !== -1) {
             if (typeof eventObject.handler === 'function') {
                 eventObject.handler();
             }

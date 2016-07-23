@@ -27,6 +27,9 @@
     "url": "https://github.com/woyorus/object-fsm/issues"
   },
   "homepage": "https://github.com/woyorus/object-fsm#readme",
+  "engines": {
+    "node": ">=4.2.4"
+  },
   "devDependencies": {
     "chai": "3.5.0",
     "mocha": "2.5.3"
