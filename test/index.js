@@ -60,6 +60,28 @@ describe('state machine', function () {
             done();
         });
         testObject.handleEvent('go');
-    })
+    });
+
+    it('should emit `willTransition` and `didTransition` events on successful event', function (done) {
+        testObject.addState('A', 'B');
+        testObject.addEvent('go', 'A', 'B');
+        var willTransitionCalled = false;
+        testObject.on('willTransition', function (stateFrom, stateTo, event) {
+            expect(stateFrom).to.equal('A');
+            expect(stateTo).to.equal('B');
+            expect(event).to.equal('go');
+            expect(testObject.state).to.equal('A');
+            willTransitionCalled = true;
+        });
+        testObject.on('didTransition', function (stateFrom, stateTo, event) {
+            expect(willTransitionCalled).to.be.true;
+            expect(stateFrom).to.equal('A');
+            expect(stateTo).to.equal('B');
+            expect(event).to.equal('go');
+            expect(testObject.state).to.equal('B');
+            done();
+        });
+        testObject.handleEvent('go');
+    });
 
 });

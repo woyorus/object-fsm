@@ -1,4 +1,8 @@
+var Emitter = require('component-emitter');
+
 module.exports = ObjectFsm;
+
+Emitter(ObjectFsm.prototype);
 
 function ObjectFsm(obj) {
     if (obj) return mixin(obj);
@@ -51,10 +55,14 @@ ObjectFsm.prototype.handleEvent = function (event) {
     if (this.fsm.events.hasOwnProperty(event)) {
         var eventObject = this.fsm.events[event];
         if (eventObject.validFrom.indexOf(this.state) !== -1) {
+            var fromState = this.state;
+            var toState = eventObject.validTo;
+            this.emit('willTransition', fromState, toState, event);
             if (typeof eventObject.handler === 'function') {
                 eventObject.handler();
             }
-            this.state = eventObject.validTo;
+            this.state = toState;
+            this.emit('didTransition', fromState, toState, event);
         }
     }
 };
