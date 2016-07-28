@@ -52,14 +52,11 @@ ObjectFsm.prototype.addEvent = function(eventName, statesFrom, stateTo, handler)
     if (typeof statesFrom === 'string') {
         statesFrom = [statesFrom];
     }
-
-    var eventObject = {
+    this.fsm.events[eventName] = {
         validFrom: statesFrom,
         validTo: stateTo,
         handler: handler
     };
-
-    this.fsm.events[eventName] = eventObject;
 };
 
 ObjectFsm.prototype.handleEvent = function (event) {
@@ -67,9 +64,9 @@ ObjectFsm.prototype.handleEvent = function (event) {
         var eventObject = this.fsm.events[event];
         var fromState = this.state;
         var toState = eventObject.validTo;
-        var handlerReturnValue = undefined;
         this.fsm.switchingStates = true;
         this.emit('willTransition', fromState, toState, event);
+        var handlerReturnValue = undefined;
         if (typeof eventObject.handler === 'function') {
             var handlerArgs = Array.prototype.slice.call(arguments).slice(1);
             handlerReturnValue = eventObject.handler.apply(this, handlerArgs);

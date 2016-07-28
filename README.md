@@ -14,12 +14,17 @@ npm install object-fsm
 ```js
 var ObjectFsm = require('object-fsm');
 
+// Any object can become an FSM
 var light = {};
+
+// Mix in ObjectFsm to the object
 ObjectFsm(light);
+
 
 light.addState('Green', 'Yellow', 'Red');
 light.setStartingState('Red');
 
+// Parameters are: eventName, stateFrom, stateTo, handlerFunc
 light.addEvent('go', 'Red', 'Green', function () {
     console.log('Let\'s go!');
 });
@@ -32,9 +37,9 @@ light.addEvent('stop', 'Yellow', 'Red', function () {
     console.log('Everybody stop!');
 });
 
-light.handleEvent('go');
-light.handleEvent('prepareToStop');
-light.handleEvent('stop');
+light.handleEvent('go'); // state: green
+light.handleEvent('prepareToStop'); // state: yellow
+light.handleEvent('stop');  // state: red
 ```
 
 ## Testing
