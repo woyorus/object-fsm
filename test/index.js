@@ -24,7 +24,7 @@ describe('state machine', function () {
     });
 
     it('should add multiple states in one call', function () {
-        testObject.addState('A', 'B', 'C');
+        testObject.addStates(['A', 'B', 'C']);
         expect(testObject.fsm.states).to.have.length(3);
         expect(testObject.fsm.states).to.include.all('A', 'B', 'C');
     });
@@ -35,7 +35,7 @@ describe('state machine', function () {
     });
 
     it('should allow setting a starting state', function () {
-        testObject.addState('A', 'B');
+        testObject.addStates(['A', 'B']);
         testObject.setStartingState('B');
         expect(testObject.state).to.equal('B');
     });
