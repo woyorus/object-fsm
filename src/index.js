@@ -35,12 +35,18 @@ function initialize(obj) {
  * Adds a state to FSM
  * Note that FSM automatically enters the state added first
  * @param {string} state State name
+ * @returns {boolean} result Whether adding a state succeeded or not
  * @public
  */
 ObjectFsm.prototype.addState = function (state) {
+    if (typeof state !== 'string') {
+        debug('addState: state must be a string');
+        return false;
+    }
     this.fsm.states.push(state);
     if (!this.state)
         this.state = state;
+    return true;
 };
 
 /**
@@ -98,11 +104,26 @@ ObjectFsm.prototype.addEvent = function(eventName, statesFrom, stateTo, handler)
     if (typeof statesFrom === 'string') {
         statesFrom = [statesFrom];
     }
+
+    var everyState = statesFrom.concat(stateTo);
+    var everyStatePresent = true;
+
+    for (var i = 0; i < everyState.length; i++) {
+        everyStatePresent = everyStatePresent && this.hasState(everyState[i]);
+    }
+
+    if (everyStatePresent === false) {
+        debug('Cannot add event \'' + eventName + '\' due to missing states from or to.');
+        return false;
+    }
+
     this.fsm.events[eventName] = {
         validFrom: statesFrom,
         validTo: stateTo,
         handler: handler
     };
+
+    return true;
 };
 
 /**

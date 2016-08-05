@@ -59,6 +59,8 @@ Note that FSM automatically enters the state added first
 
 -   `state` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** State name
 
+Returns **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** result Whether adding a state succeeded or not
+
 #### addStates
 
 Adds a list of states to FSM

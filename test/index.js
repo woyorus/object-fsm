@@ -18,9 +18,14 @@ describe('state machine', function () {
     });
 
     it('should add new state', function () {
-        testObject.addState('A');
+        expect(testObject.addState('A')).to.be.true;
         expect(testObject.fsm.states).to.have.length(1);
         expect(testObject.fsm.states).to.include('A');
+    });
+
+    it('should only accept a String state', function () {
+        expect(testObject.addState({ 'A': true })).to.be.false;
+        expect(testObject.addState(3)).to.be.false;
     });
 
     it('should add multiple states in one call', function () {
@@ -41,13 +46,20 @@ describe('state machine', function () {
     });
 
     it('should not allow setting starting state which does not exist', function () {
-        testObject.addState('A', 'B', 'C');
+        testObject.addStates(['A', 'B', 'C']);
         testObject.setStartingState('Z');
         expect(testObject.state).to.equal('A');
     });
 
+    it('should not add events with missing states', function () {
+        testObject.addStates(['A', 'B']);
+        var result = testObject.addEvent('go', 'A', 'C');
+        expect(result).to.be.false;
+        expect(testObject.hasEvent('go')).to.be.false;
+    });
+
     it('should switch state upon event', function () {
-        testObject.addState('A', 'B');
+        testObject.addStates(['A', 'B']);
         testObject.addEvent('go', 'A', 'B');
         expect(testObject.state).to.equal('A');
         testObject.handleEvent('go');
@@ -55,7 +67,7 @@ describe('state machine', function () {
     });
 
     it('should not allow transition from invalid state', function () {
-        testObject.addState('A', 'B') ;
+        testObject.addStates(['A', 'B']) ;
         testObject.addEvent('go', 'B', 'A');
         testObject.setStartingState('A');
         testObject.handleEvent('go');
@@ -63,7 +75,7 @@ describe('state machine', function () {
     });
 
     it('should invoke event handler upon event', function (done) {
-        testObject.addState('A', 'B');
+        testObject.addStates(['A', 'B']);
         testObject.addEvent('go', 'A', 'B', function () {
             done();
         });
@@ -71,7 +83,7 @@ describe('state machine', function () {
     });
 
     it('should emit `willTransition` and `didTransition` events on successful event', function (done) {
-        testObject.addState('A', 'B');
+        testObject.addStates(['A', 'B']);
         testObject.addEvent('go', 'A', 'B');
         var willTransitionCalled = false;
         testObject.on('willTransition', function (stateFrom, stateTo, event) {
@@ -93,7 +105,7 @@ describe('state machine', function () {
     });
 
     it('should pass parameters from handleEvent to the handler', function (done) {
-        testObject.addState('A', 'B');
+        testObject.addStates(['A', 'B']);
         testObject.addEvent('go', 'A', 'B', function (param1, param2) {
             expect(param1).to.equal('hello');
             expect(param2).to.equal(123);
@@ -103,7 +115,7 @@ describe('state machine', function () {
     });
 
     it('should return value that is returned by the handler', function () {
-        testObject.addState('A', 'B');
+        testObject.addStates(['A', 'B']);
         testObject.addEvent('go', 'A', 'B', function () {
             return "ok";
         });
@@ -112,7 +124,7 @@ describe('state machine', function () {
     });
 
     it('should not transition if cancelled in the handler', function () {
-        testObject.addState('A', 'B');
+        testObject.addStates(['A', 'B']);
         testObject.addEvent('go', 'A', 'B', function () {
             this.cancelTransition();
         });
@@ -121,7 +133,7 @@ describe('state machine', function () {
     });
 
     it('should pause transition if deferred', function () {
-        testObject.addState('A', 'B');
+        testObject.addStates(['A', 'B']);
         testObject.addEvent('go', 'A', 'B', function () {
             this.deferTransition();
         });
@@ -132,7 +144,7 @@ describe('state machine', function () {
     });
 
     it('should not handle another event while transition is deferred', function () {
-        testObject.addState('A', 'B', 'C');
+        testObject.addStates(['A', 'B', 'C']);
         testObject.addEvent('goToB', 'A', 'B', function () {
             this.deferTransition();
         });
