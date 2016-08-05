@@ -26,7 +26,6 @@ function initialize(obj) {
     obj.fsm = {};
     obj.fsm.states = [];
     obj.fsm.events = {};
-    obj.fsm.transitionCancelled = false;
     obj.fsm.transitionDeferred = false;
     obj.fsm.switchingStates = false;
 }
@@ -140,18 +139,16 @@ ObjectFsm.prototype.handleEvent = function (event) {
         var toState = eventObject.validTo;
         this.fsm.switchingStates = true;
         this.emit('willTransition', fromState, toState, event);
+        var that = this;
+        this.fsm.finalizeTransitionClosure = function () {
+            that.state = toState;
+            that.emit('didTransition', fromState, toState, event);
+        };
         var handlerReturnValue = undefined;
         if (typeof eventObject.handler === 'function') {
             var handlerArgs = Array.prototype.slice.call(arguments).slice(1);
             handlerReturnValue = eventObject.handler.apply(this, handlerArgs);
         }
-        var that = this;
-        this.fsm.finalizeTransitionClosure = function () {
-            if (!that.fsm.transitionCancelled) {
-                that.state = toState;
-                that.emit('didTransition', fromState, toState, event);
-            }
-        };
         if (!this.fsm.transitionDeferred) {
             this.finalizeTransition();
         }
@@ -174,20 +171,7 @@ ObjectFsm.prototype.canHandleEvent = function (event) {
 };
 
 /**
- * Cancels current transition.
- * NOTE: this function can be called only in event handler (during an event), or in `willTransition` event handler,
- * or if a transition was previously deferred using deferTransition
- * @public
- */
-ObjectFsm.prototype.cancelTransition = function () {
-    this.fsm.transitionCancelled = true;
-    this.fsm.finalizeTransitionClosure = null;
-    this.fsm.switchingStates = false;
-    this.fsm.transitionCancelled = true;
-};
-
-/**
- * Defers an ongoing transition until future call to either finalizeTransition, or cancelTransition.
+ * Defers an ongoing transition until future call to finalizeTransition.
  * Use for any asynchronous event hanling.
  * NOTE: this function can be called only in event handler (during an event), or in `willTransition` event handler.
  * @public
@@ -205,5 +189,4 @@ ObjectFsm.prototype.finalizeTransition = function () {
     this.fsm.finalizeTransitionClosure = null;
     this.fsm.switchingStates = false;
     this.fsm.transitionDeferred = false;
-    this.fsm.transitionCancelled = false;
 };

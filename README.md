@@ -129,15 +129,9 @@ Returns true if FSM is able to handle event right now
 
 Returns **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
-#### cancelTransition
-
-Cancels current transition.
-NOTE: this function can be called only in event handler (during an event), or in `willTransition` event handler,
-or if a transition was previously deferred using deferTransition
-
 #### deferTransition
 
-Defers an ongoing transition until future call to either finalizeTransition, or cancelTransition.
+Defers an ongoing transition until future call to finalizeTransition.
 Use for any asynchronous event hanling.
 NOTE: this function can be called only in event handler (during an event), or in `willTransition` event handler.
 

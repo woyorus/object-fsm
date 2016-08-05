@@ -123,15 +123,6 @@ describe('state machine', function () {
         expect(returnValue).to.equal("ok");
     });
 
-    it('should not transition if cancelled in the handler', function () {
-        testObject.addStates(['A', 'B']);
-        testObject.addEvent('go', 'A', 'B', function () {
-            this.cancelTransition();
-        });
-        testObject.handleEvent('go');
-        expect(testObject.state).to.equal('A');
-    });
-
     it('should pause transition if deferred', function () {
         testObject.addStates(['A', 'B']);
         testObject.addEvent('go', 'A', 'B', function () {
