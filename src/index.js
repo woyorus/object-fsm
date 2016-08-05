@@ -185,8 +185,10 @@ ObjectFsm.prototype.deferTransition = function () {
  * @public
  */
 ObjectFsm.prototype.finalizeTransition = function () {
-    this.fsm.finalizeTransitionClosure();
-    this.fsm.finalizeTransitionClosure = null;
-    this.fsm.switchingStates = false;
-    this.fsm.transitionDeferred = false;
+    if (typeof this.fsm.finalizeTransitionClosure === 'function') {
+        this.fsm.finalizeTransitionClosure();
+        this.fsm.finalizeTransitionClosure = null;
+        this.fsm.switchingStates = false;
+        this.fsm.transitionDeferred = false;
+    }
 };
