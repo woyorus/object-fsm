@@ -183,6 +183,7 @@ ObjectFsm.prototype.cancelTransition = function () {
     this.fsm.transitionCancelled = true;
     this.fsm.finalizeTransitionClosure = null;
     this.fsm.switchingStates = false;
+    this.fsm.transitionCancelled = true;
 };
 
 /**
@@ -203,4 +204,6 @@ ObjectFsm.prototype.finalizeTransition = function () {
     this.fsm.finalizeTransitionClosure();
     this.fsm.finalizeTransitionClosure = null;
     this.fsm.switchingStates = false;
+    this.fsm.transitionDeferred = false;
+    this.fsm.transitionCancelled = false;
 };
