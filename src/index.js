@@ -43,8 +43,8 @@ ObjectFsm.prototype.addState = function (state) {
         return false;
     }
     this.fsm.states.push(state);
-    if (!this.state)
-        this.state = state;
+    if (!this.currentState)
+        this.currentState = state;
     return true;
 };
 
@@ -68,7 +68,7 @@ ObjectFsm.prototype.addStates = function (states) {
  */
 ObjectFsm.prototype.setStartingState = function (state) {
     if (this.hasState(state)) {
-        this.state = state;
+        this.currentState = state;
         return true;
     }
     return false;
@@ -138,13 +138,13 @@ ObjectFsm.prototype.addEvent = function(eventName, statesFrom, stateTo, handler)
 ObjectFsm.prototype.handleEvent = function (event) {
     if (this.canHandleEvent(event)) {
         var eventObject = this.fsm.events[event];
-        var fromState = this.state;
+        var fromState = this.currentState;
         var toState = eventObject.validTo;
         this.fsm.switchingStates = true;
         this.emit('willTransition', fromState, toState, event);
         var that = this;
         this.fsm.finalizeTransitionClosure = function () {
-            that.state = toState;
+            that.currentState = toState;
             that.emit('didTransition', fromState, toState, event);
         };
         var handlerReturnValue = undefined;
@@ -169,7 +169,7 @@ ObjectFsm.prototype.handleEvent = function (event) {
  */
 ObjectFsm.prototype.canHandleEvent = function (event) {
     return this.hasEvent(event) &&
-        (this.fsm.events[event].validFrom.indexOf(this.state) !== -1) &&
+        (this.fsm.events[event].validFrom.indexOf(this.currentState) !== -1) &&
             this.fsm.switchingStates === false;
 };
 

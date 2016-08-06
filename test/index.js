@@ -32,7 +32,7 @@ describe('ObjectFsm', function () {
 
         it('should choose starting state to be the first one', function () {
             testObject.addState('A');
-            expect(testObject.state).to.equal('A');
+            expect(testObject.currentState).to.equal('A');
         });
     });
 
@@ -45,7 +45,7 @@ describe('ObjectFsm', function () {
 
         it('should choose starting state to be the first one', function () {
             testObject.addStates(['A', 'B', 'C']);
-            expect(testObject.state).to.equal('A');
+            expect(testObject.currentState).to.equal('A');
         });
     });
 
@@ -54,14 +54,14 @@ describe('ObjectFsm', function () {
             testObject.addStates(['A', 'B']);
             var result = testObject.setStartingState('B');
             expect(result).to.be.true;
-            expect(testObject.state).to.equal('B');
+            expect(testObject.currentState).to.equal('B');
         });
 
         it('should not allow setting starting state which does not exist', function () {
             testObject.addStates(['A', 'B', 'C']);
             var result = testObject.setStartingState('Z');
             expect(result).to.be.false;
-            expect(testObject.state).to.equal('A');
+            expect(testObject.currentState).to.equal('A');
         });
     });
 
@@ -78,9 +78,9 @@ describe('ObjectFsm', function () {
         it('should switch state upon event', function () {
             testObject.addStates(['A', 'B']);
             testObject.addEvent('go', 'A', 'B');
-            expect(testObject.state).to.equal('A');
+            expect(testObject.currentState).to.equal('A');
             testObject.handleEvent('go');
-            expect(testObject.state).to.equal('B');
+            expect(testObject.currentState).to.equal('B');
         });
 
         it('should not allow transition from invalid state', function () {
@@ -88,7 +88,7 @@ describe('ObjectFsm', function () {
             testObject.addEvent('go', 'B', 'A');
             testObject.setStartingState('A');
             testObject.handleEvent('go');
-            expect(testObject.state).to.equal('A');
+            expect(testObject.currentState).to.equal('A');
         });
 
         it('should invoke event handler upon event', function (done) {
@@ -107,7 +107,7 @@ describe('ObjectFsm', function () {
                 expect(stateFrom).to.equal('A');
                 expect(stateTo).to.equal('B');
                 expect(event).to.equal('go');
-                expect(testObject.state).to.equal('A');
+                expect(testObject.currentState).to.equal('A');
                 willTransitionCalled = true;
             });
             testObject.on('didTransition', function (stateFrom, stateTo, event) {
@@ -115,7 +115,7 @@ describe('ObjectFsm', function () {
                 expect(stateFrom).to.equal('A');
                 expect(stateTo).to.equal('B');
                 expect(event).to.equal('go');
-                expect(testObject.state).to.equal('B');
+                expect(testObject.currentState).to.equal('B');
                 done();
             });
             testObject.handleEvent('go');
@@ -146,9 +146,9 @@ describe('ObjectFsm', function () {
                 this.deferTransition();
             });
             testObject.handleEvent('go');
-            expect(testObject.state).to.equal('A');
+            expect(testObject.currentState).to.equal('A');
             testObject.finalizeTransition();
-            expect(testObject.state).to.equal('B');
+            expect(testObject.currentState).to.equal('B');
         });
 
         it('should not handle another event while transition is deferred', function () {
@@ -158,11 +158,11 @@ describe('ObjectFsm', function () {
             });
             testObject.addEvent('goToC', 'A', 'C');
             testObject.handleEvent('goToB');
-            expect(testObject.state).to.equal('A');
+            expect(testObject.currentState).to.equal('A');
             testObject.handleEvent('goToC');
-            expect(testObject.state).to.equal('A');
+            expect(testObject.currentState).to.equal('A');
             testObject.finalizeTransition();
-            expect(testObject.state).to.equal('B');
+            expect(testObject.currentState).to.equal('B');
         });
     });
 });
