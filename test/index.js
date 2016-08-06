@@ -70,7 +70,7 @@ describe('ObjectFsm', function () {
             testObject.addStates(['A', 'B']);
             var result = testObject.addEvent('go', 'A', 'C');
             expect(result).to.be.false;
-            expect(testObject.hasEvent('go')).to.be.false;
+            expect(testObject.containsEvent('go')).to.be.false;
         });
     });
 

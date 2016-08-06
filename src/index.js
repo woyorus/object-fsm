@@ -67,7 +67,7 @@ ObjectFsm.prototype.addStates = function (states) {
  * @public
  */
 ObjectFsm.prototype.setStartingState = function (state) {
-    if (this.hasState(state)) {
+    if (this.containsState(state)) {
         this.currentState = state;
         return true;
     }
@@ -80,7 +80,7 @@ ObjectFsm.prototype.setStartingState = function (state) {
  * @returns {boolean}
  * @public
  */
-ObjectFsm.prototype.hasState = function (state) {
+ObjectFsm.prototype.containsState = function (state) {
     return this.fsm.states.indexOf(state) !== -1;
 };
 
@@ -90,8 +90,22 @@ ObjectFsm.prototype.hasState = function (state) {
  * @returns {boolean}
  * @public
  */
-ObjectFsm.prototype.hasEvent = function (event) {
+ObjectFsm.prototype.containsEvent = function (event) {
     return this.fsm.events.hasOwnProperty(event);
+};
+
+/**
+ * Returns true if all passed states present in FSM
+ * @param {Array<string>} states
+ * @returns {boolean}
+ * @public
+ */
+ObjectFsm.prototype.containsEveryState = function (states) {
+    var allPresent = true;
+    for (var i = 0; i < states.length; i++) {
+        allPresent = allPresent && this.containsState(states[i]);
+    }
+    return allPresent;
 };
 
 /**
@@ -106,25 +120,16 @@ ObjectFsm.prototype.addEvent = function(eventName, statesFrom, stateTo, handler)
     if (typeof statesFrom === 'string') {
         statesFrom = [statesFrom];
     }
-
     var everyState = statesFrom.concat(stateTo);
-    var everyStatePresent = true;
-
-    for (var i = 0; i < everyState.length; i++) {
-        everyStatePresent = everyStatePresent && this.hasState(everyState[i]);
-    }
-
-    if (everyStatePresent === false) {
+    if (this.containsEveryState(everyState) === false) {
         debug('Cannot add event \'' + eventName + '\' due to missing states from or to.');
         return false;
     }
-
     this.fsm.events[eventName] = {
         validFrom: statesFrom,
         validTo: stateTo,
         handler: handler
     };
-
     return true;
 };
 
@@ -137,24 +142,31 @@ ObjectFsm.prototype.addEvent = function(eventName, statesFrom, stateTo, handler)
  */
 ObjectFsm.prototype.handleEvent = function (event) {
     if (this.canHandleEvent(event)) {
+        this.fsm.switchingStates = true;
+
         var eventObject = this.fsm.events[event];
         var fromState = this.currentState;
         var toState = eventObject.validTo;
-        this.fsm.switchingStates = true;
         this.emit('willTransition', fromState, toState, event);
+
         var that = this;
         this.fsm.finalizeTransitionClosure = function () {
+            that.fsm.switchingStates = false;
+            that.fsm.transitionDeferred = false;
             that.currentState = toState;
             that.emit('didTransition', fromState, toState, event);
         };
+
         var handlerReturnValue = undefined;
         if (typeof eventObject.handler === 'function') {
             var handlerArgs = Array.prototype.slice.call(arguments).slice(1);
             handlerReturnValue = eventObject.handler.apply(this, handlerArgs);
         }
-        if (!this.fsm.transitionDeferred) {
+
+        if (this.fsm.transitionDeferred === false) {
             this.finalizeTransition();
         }
+
         return handlerReturnValue;
     } else {
         debug('cannot handle event ' + event + ' due to invalid conditions, such as concurrent transition');
@@ -168,7 +180,7 @@ ObjectFsm.prototype.handleEvent = function (event) {
  * @public
  */
 ObjectFsm.prototype.canHandleEvent = function (event) {
-    return this.hasEvent(event) &&
+    return this.containsEvent(event) &&
         (this.fsm.events[event].validFrom.indexOf(this.currentState) !== -1) &&
             this.fsm.switchingStates === false;
 };
@@ -191,7 +203,5 @@ ObjectFsm.prototype.finalizeTransition = function () {
     if (typeof this.fsm.finalizeTransitionClosure === 'function') {
         this.fsm.finalizeTransitionClosure();
         this.fsm.finalizeTransitionClosure = null;
-        this.fsm.switchingStates = false;
-        this.fsm.transitionDeferred = false;
     }
 };
