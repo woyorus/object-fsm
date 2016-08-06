@@ -63,12 +63,15 @@ ObjectFsm.prototype.addStates = function (states) {
 /**
  * Sets a starting state. FSM immediately moves to that state.
  * @param {string} state
+ * @returns {boolean} Whether setting a starting state has succeeded
  * @public
  */
 ObjectFsm.prototype.setStartingState = function (state) {
     if (this.hasState(state)) {
         this.state = state;
+        return true;
     }
+    return false;
 };
 
 /**
