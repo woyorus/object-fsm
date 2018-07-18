@@ -1,6 +1,9 @@
 # object-fsm
 
-Make any JavaScript object to be a finite state machine
+###Make any JavaScript object to be a finite state machine
+
+Stable, production-ready and battle-tested. 
+Supports NodeJS version 4 and later. Tested up to Node 10.
 
 [![Travis](https://img.shields.io/travis/woyorus/object-fsm.svg?maxAge=2592000)](<>) [![Codecov](https://img.shields.io/codecov/c/github/woyorus/object-fsm.svg?maxAge=2592000)](<>)
 
