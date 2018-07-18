@@ -1,11 +1,11 @@
 {
   "name": "object-fsm",
-  "version": "0.5.2",
+  "version": "1.0.0",
   "description": "Make any JavaScript object to be a finite state machine",
   "main": "src/index.js",
   "scripts": {
-    "test": "mocha --reporter spec -w",
-    "test:single": "mocha --reporter spec",
+    "test": "mocha --reporter spec",
+    "test:watch": "mocha --reporter spec -w",
     "cover": "istanbul cover _mocha -- -R spec test/*"
   },
   "repository": {
